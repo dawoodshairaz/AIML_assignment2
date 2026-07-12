@@ -1,81 +1,38 @@
 import streamlit as st
-import pandas as pd
 import joblib
+import pandas as pd
 
 # Load the trained model
-# Make sure 'random_forest_regressor_model.pkl' is in the same directory as this app.py file
-try:
-    model = joblib.load('random_forest_regressor_model.pkl')
-    st.success('Model loaded successfully!')
-except FileNotFoundError:
-    st.error('Error: Model file `random_forest_regressor_model.pkl` not found. Please ensure it is in the same directory.')
-    st.stop()
-except Exception as e:
-    st.error(f'Error loading model: {e}')
-    st.stop()
+model_rf = joblib.load('random_forest_regressor_model.pkl')
 
-# Set up the Streamlit app title and description
-st.title('Random Forest Regressor Model Deployment')
-st.write('Enter the feature values below to get a prediction.')
+# Assuming these are the feature columns your model was trained on
+# It's good practice to get this from the training data or a config file
+# For simplicity, we're hardcoding based on previous notebook steps.
+feature_columns = ['Year', 'Cylinder', 'Milage'] 
 
-# --- Input Features (Customize these based on your model's training data) ---
-st.header('Input Features')
+def predict_price(year, cylinder, milage):
+    # Create an empty dataframe with the same columns as the training data
+    input_df = pd.DataFrame(0, index=[0], columns=feature_columns)
 
-# User-specified input features using Streamlit widgets
-manufacturing_year = st.slider('Manufacturing Year', 1990, 2026, 2020, step=1)
-kilometers_driven = st.slider('Kilometers Driven', 0, 500000, 50000)
-fuel_type = st.radio('Fuel Type', ["Petrol","Diesel","CNG","LPG"])
-seller_type = st.radio('Seller Type', ["Dealer","Individual"])
-transmission = st.radio('Transmission', ["Manual","Automatic"])
-owner_type = st.radio('Owner', ["First Owner","Second Owner","Third Owner","Fourth Owner","Fifth & Above Owner"])
+    # Populate the input_df with the values from the Streamlit UI
+    input_df['Year'] = year
+    input_df['Cylinder'] = cylinder
+    input_df['Milage'] = milage
 
-# --- Feature Encoding (Adjust this to match your model's preprocessing) ---
-# Example: Simple label encoding for categorical features
+    # Make prediction
+    prediction = model_rf.predict(input_df)[0]
 
-fuel_type_encoded = {
-    "Petrol": 0,
-    "Diesel": 1,
-    "CNG": 2,
-    "LPG": 3
-}.get(fuel_type, -1) # -1 or raise error for unknown category
+    return f"Estimated Car Price: ${prediction:,.2f}"
 
-seller_type_encoded = {
-    "Dealer": 0,
-    "Individual": 1
-}.get(seller_type, -1)
+# Streamlit UI
+st.title('🚗 Car Price Prediction App')
+st.write('Enter the car details to get an estimated price.')
 
-transmission_encoded = {
-    "Manual": 0,
-    "Automatic": 1
-}.get(transmission, -1)
+# Input widgets
+year_input = st.slider('Year', min_value=1990, max_value=2024, value=2020)
+cylinder_input = st.slider('Cylinder', min_value=3, max_value=8, value=4)
+milage_input = st.slider('Milage', min_value=0, max_value=300000, value=50000)
 
-owner_type_encoded = {
-    "First Owner": 0,
-    "Second Owner": 1,
-    "Third Owner": 2,
-    "Fourth Owner": 3,
-    "Fifth & Above Owner": 4
-}.get(owner_type, -1)
-
-# Create a DataFrame for the input features
-# Ensure the column names match the features used during model training EXACTLY
-input_data = pd.DataFrame([{
-    'Manufacturing Year': manufacturing_year,
-    'Kilometers Driven': kilometers_driven,
-    'Fuel Type': fuel_type_encoded,
-    'Seller Type': seller_type_encoded,
-    'Transmission': transmission_encoded,
-    'Owner': owner_type_encoded
-}])
-
-st.write('### Input Data Preview:')
-st.dataframe(input_data)
-
-# --- Prediction ---
-if st.button('Get Prediction'):
-    try:
-        prediction = model.predict(input_data)
-        st.success(f'The predicted value is: **{prediction[0]:.2f}**')
-    except Exception as e:
-        st.error(f'An error occurred during prediction: {e}')
-        st.warning('Please ensure your input features match the model\'s expected format and types.')
+if st.button('Predict Price'):
+    result = predict_price(year_input, cylinder_input, milage_input)
+    st.success(result)
