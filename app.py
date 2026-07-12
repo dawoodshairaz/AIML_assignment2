@@ -13,7 +13,7 @@ Original file is located at
 
 import streamlit as st
 import pandas as pd
-import joblib
+#import joblib
 
 # Load the trained model
 # Make sure 'random_forest_regressor_model.pkl' is in the same directory as this app.py file
