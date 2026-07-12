@@ -9,7 +9,7 @@ Original file is located at
 ### `app.py` - Streamlit Application Code
 """
 
-pip install streamlit pandas joblib
+# pip install streamlit pandas joblib
 
 import streamlit as st
 import pandas as pd
