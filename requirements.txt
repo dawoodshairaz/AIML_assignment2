@@ -2,3 +2,6 @@ streamlit
 pandas
 joblib
 sklearn
+sklearn.ensemble
+seaborn
+sklearn.model_selection
