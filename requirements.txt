@@ -1,7 +1,6 @@
 streamlit
 pandas
-joblib
 scikit-learn
-sklearn.ensemble
-seaborn
-sklearn.model_selection
+joblib
+openpyxl
+numpy
