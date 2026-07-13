@@ -29,7 +29,7 @@ st.title('🚗 Car Price Prediction App')
 st.write('Enter the car details to get an estimated price.')
 
 # Input widgets
-year_input = st.slider('Year', min_value=1990, max_value=2024, value=2020)
+year_input = st.slider('Year', min_value=1990, max_value=2026, value=2025)
 cylinder_input = st.slider('Cylinder', min_value=3, max_value=8, value=4)
 milage_input = st.slider('Milage', min_value=0, max_value=300000, value=50000)
 
